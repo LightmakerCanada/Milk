@@ -21,16 +21,13 @@ Find = (name, stack, value = null) ->
     value = ctx[name]
     break
 
-  value = Find(part, [value]) for part in parts
-
-  # If we find a function in the stack, we'll treat it as a method, and call it
-  # with `this` bound to the element it came from. If a method returns a
-  # function, we treat it as a lambda, which doesn't have a bound `this`.
+  # If we find a function in the stack, we'll just call it with `this` bound 
+  # to the element it came from.
   if value instanceof Function
-    value = do (value) -> ->
-      val = value.apply(ctx, arguments)
-      return (val instanceof Function) and val.apply(null, arguments) or val
+    value = value.apply(ctx)
 
+  value = Find(part, [value]) for part in parts
+ 
   # Null values will be coerced to the empty string.
   return value
 
